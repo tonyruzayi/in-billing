@@ -104,7 +104,7 @@ h1, h2, h3, h4, .brand { font-family: 'Syne', sans-serif; }
   display: flex; align-items: center; justify-content: center;
   font-size: 0.75rem; font-weight: 700; color: #fff; flex-shrink: 0;
 }
-.user-email { font-size: 0.72rem; color: var(--text-muted); truncate; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-email { font-size: 0.72rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* Main content */
 .main-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
