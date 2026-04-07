@@ -16,43 +16,24 @@ import Inventory from './pages/Inventory';
 import Reports from './pages/Reports';
 import Admin from './pages/Admin';
 import './App.css';
-
 function Guard({ children, adminOnly }) {
   const { user, profile, loading } = useAuth();
-  if (loading) {
-    return (
-      <div className="splash">
-        <div className="splash-logo">
-          <span style={{color:'#fff',fontFamily:'Syne,sans-serif',fontWeight:800,fontSize:'1.2rem'}}>IN</span>
-        </div>
-        <p style={{color:'var(--muted)',fontSize:'.82rem',marginTop:8}}>Loading…</p>
-      </div>
-    );
-  }
+  if (loading) return <div className="splash"><div className="splash-logo"><span style={{color:'#fff',fontFamily:'Syne,sans-serif',fontWeight:800,fontSize:'1.2rem'}}>IN</span></div></div>;
   if (!user) return <Navigate to="/login" replace />;
   if (adminOnly && profile?.role !== 'admin') return <Navigate to="/" replace />;
   return children;
 }
-
 function PublicRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) return null;
   if (user) return <Navigate to="/" replace />;
   return children;
 }
-
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            style: { background: '#11112a', color: '#e2e2f0', border: '1px solid #252550', fontSize: '0.85rem' },
-            success: { iconTheme: { primary: '#10b981', secondary: '#fff' } },
-            error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
-          }}
-        />
+        <Toaster position="top-right" toastOptions={{ style:{background:'#11112a',color:'#e2e2f0',border:'1px solid #252550',fontSize:'0.85rem'}, success:{iconTheme:{primary:'#10b981',secondary:'#fff'}}, error:{iconTheme:{primary:'#ef4444',secondary:'#fff'}} }}/>
         <Routes>
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/" element={<Guard><Layout /></Guard>}>
