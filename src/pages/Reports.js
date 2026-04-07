@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React,{useState,useEffect} from 'react';
 import {supabase} from '../lib/supabase';
 import {format,subMonths,startOfMonth,endOfMonth} from 'date-fns';

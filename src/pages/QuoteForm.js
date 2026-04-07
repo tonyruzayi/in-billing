@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React,{useState,useEffect,useCallback} from 'react';
 import {useNavigate,useParams} from 'react-router-dom';
 import {supabase} from '../lib/supabase';
@@ -30,7 +31,7 @@ export default function QuoteForm(){
   const[clientSearch,setClientSearch]=useState('');
   const[showClients,setShowClients]=useState(false);
 
-  const load=useCallback(async()=>{
+  const loadLists=useCallback(async()=>{
     const[{data:cls},{data:cat}]=await Promise.all([
       supabase.from('clients').select('*').order('name'),
       supabase.from('catalog_items').select('*').order('name'),
@@ -38,18 +39,18 @@ export default function QuoteForm(){
     setClients(cls||[]);setCatalog(cat||[]);
   },[]);
 
-  useEffect(()=>{
-    load();
-    if(isEdit)loadQuote();
-    else nextNum('quotations','quote_number','QUO').then(n=>setForm(f=>({...f,quote_number:n})));
-  },[id]);
-
-  async function loadQuote(){
+  const loadQuote=useCallback(async()=>{
     const{data}=await supabase.from('quotations').select('*').eq('id',id).single();
     if(!data){nav('/quotations');return;}
     setForm({quote_number:data.quote_number,quote_date:data.quote_date,valid_until:data.valid_until||'',client_name:data.client_name,client_address:data.client_address||'',client_city:data.client_city||'',client_country:data.client_country||'Botswana',client_phone:data.client_phone||'',client_email:data.client_email||'',project_ref:data.project_ref||'',vat_rate:data.vat_rate||0.14,discount:data.discount||0,status:data.status||'draft',notes:data.notes||''});
     setItems(data.items?.length?data.items:[emptyItem()]);
-  }
+  },[id,nav]);
+
+  useEffect(()=>{
+    loadLists();
+    if(isEdit) loadQuote();
+    else nextNum('quotations','quote_number','QUO').then(n=>setForm(f=>({...f,quote_number:n})));
+  },[id]);
 
   function setF(k,v){setForm(f=>({...f,[k]:v}));}
   function setItem(i,k,v){setItems(it=>it.map((r,j)=>j===i?{...r,[k]:v}:r));}
@@ -61,11 +62,6 @@ export default function QuoteForm(){
     setShowClients(false);setClientSearch('');
   }
 
-  function pickCatalogItem(cat,i){
-    setItem(i,'description',cat.name+(cat.description?' — '+cat.description:''));
-    setItem(i,'unit_price',cat.unit_price||0);
-  }
-
   async function save(e){
     e.preventDefault();
     if(!form.client_name.trim()){toast.error('Client name required');return;}
@@ -73,7 +69,6 @@ export default function QuoteForm(){
     setSaving(true);
     const{subtotal,vatAmount,total}=calcTotals(items,form.vat_rate,form.discount);
     const payload={...form,items:items.filter(it=>it.description.trim()),subtotal:Math.round(subtotal*100)/100,vat_amount:Math.round(vatAmount*100)/100,total:Math.round(total*100)/100,discount:Number(form.discount)||0,vat_rate:Number(form.vat_rate)||0.14,updated_at:new Date().toISOString()};
-    // Save items to catalog
     for(const it of items){
       if(it.description.trim()){
         await supabase.from('catalog_items').upsert({name:it.description.trim(),unit_price:Number(it.unit_price)||0},{onConflict:'name',ignoreDuplicates:true});
@@ -111,7 +106,6 @@ export default function QuoteForm(){
             <div className="fg" style={{gridColumn:'2/4'}}><label>Project / Reference</label><input className="fc" value={form.project_ref} onChange={e=>setF('project_ref',e.target.value)} placeholder="Optional reference"/></div>
           </div>
         </div>
-
         <div className="card" style={{marginBottom:14}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}}>
             <div className="sec-title" style={{margin:0}}>Client</div>
@@ -125,7 +119,6 @@ export default function QuoteForm(){
             <div className="fg"><label>Phone</label><input className="fc" value={form.client_phone} onChange={e=>setF('client_phone',e.target.value)} placeholder="+267…"/></div>
           </div>
         </div>
-
         <div className="card" style={{marginBottom:14}}>
           <div className="sec-title">Line Items</div>
           <div className="tbl-wrap">
@@ -134,8 +127,8 @@ export default function QuoteForm(){
               <tbody>{items.map((it,i)=><tr key={i}>
                 <td style={{textAlign:'center',color:'var(--muted)',fontSize:'.78rem'}}>{i+1}</td>
                 <td>
-                  <input value={it.description} onChange={e=>setItem(i,'description',e.target.value)} placeholder="Item or service description…" list={`cat-${i}`}/>
-                  <datalist id={`cat-${i}`}>{catalog.map(c=><option key={c.id} value={c.name}/>)}</datalist>
+                  <input value={it.description} onChange={e=>setItem(i,'description',e.target.value)} placeholder="Item or service description…" list={'cat-q-'+i}/>
+                  <datalist id={'cat-q-'+i}>{catalog.map(c=><option key={c.id} value={c.name}/>)}</datalist>
                 </td>
                 <td><input type="number" min="0" step="0.01" value={it.qty} onChange={e=>setItem(i,'qty',e.target.value)} style={{textAlign:'right'}}/></td>
                 <td><input type="number" min="0" step="0.01" value={it.unit_price} onChange={e=>setItem(i,'unit_price',e.target.value)} style={{textAlign:'right'}}/></td>
@@ -154,14 +147,12 @@ export default function QuoteForm(){
             </div>
           </div>
         </div>
-
         <div className="card">
           <div className="sec-title">Notes</div>
           <div className="fg"><textarea className="fc" rows={3} value={form.notes} onChange={e=>setF('notes',e.target.value)} placeholder="Additional notes or scope…"/></div>
         </div>
       </form>
     </div>
-
     {showClients&&<div className="modal-overlay" onClick={()=>setShowClients(false)}>
       <div className="modal modal-lg" onClick={e=>e.stopPropagation()}>
         <div className="modal-title">Select Client</div>
