@@ -1,4 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
+
 const url = process.env.REACT_APP_SUPABASE_URL || '';
 const key = process.env.REACT_APP_SUPABASE_ANON_KEY || '';
-export const supabase = createClient(url, key);
+
+export const supabase = createClient(url, key, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: false,
+  },
+  realtime: { params: { eventsPerSecond: 2 } },
+  global: {
+    headers: { 'x-application-name': 'in-billing' },
+  },
+});

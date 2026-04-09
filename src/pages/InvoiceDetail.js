@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { generateInvoicePDF } from '../lib/pdfGenerator';
 import { exportInvoiceXLSX } from '../lib/excelExport';
-import LOGO from '../logoData';
+import LETTERHEAD from '../letterheadData';
 
 const fa = n => 'BWP ' + Number(n || 0).toLocaleString('en-BW', { minimumFractionDigits: 2 });
 const fd = d => d ? format(new Date(d), 'dd MMM yyyy') : '—';
@@ -101,7 +101,7 @@ export default function InvoiceDetail() {
         </div>
       </div>
       <div className="btn-row">
-        <button className="btn btn-secondary btn-sm" onClick={() => { generateInvoicePDF(invoice, payments, LOGO); toast.success('PDF downloaded'); }}>📄 PDF</button>
+        <button className="btn btn-secondary btn-sm" onClick={() => { generateInvoicePDF(invoice, payments, LETTERHEAD); toast.success('PDF downloaded'); }}>📄 PDF</button>
         <button className="btn btn-secondary btn-sm" onClick={() => { exportInvoiceXLSX(invoice, payments); toast.success('Excel downloaded'); }}>📊 Excel</button>
         <button className="btn btn-secondary btn-sm" onClick={() => setEmailModal(true)}>📧 Email</button>
         <Link to={'/invoices/' + id + '/edit'} className="btn btn-secondary btn-sm">✏️ Edit</Link>
@@ -113,7 +113,7 @@ export default function InvoiceDetail() {
       {/* Mobile quick actions */}
       <div style={{ display: 'grid', gridTemplateColumns: invoice.status !== 'paid' ? 'repeat(4,1fr)' : 'repeat(3,1fr)', gap: 8, marginBottom: 14 }}>
         <button className="btn btn-secondary btn-sm" style={{ flexDirection: 'column', gap: 3, padding: '10px 4px', fontSize: '.7rem' }}
-          onClick={() => { generateInvoicePDF(invoice, payments, LOGO); toast.success('PDF downloaded'); }}>📄<span>PDF</span></button>
+          onClick={() => { generateInvoicePDF(invoice, payments, LETTERHEAD); toast.success('PDF downloaded'); }}>📄<span>PDF</span></button>
         <button className="btn btn-secondary btn-sm" style={{ flexDirection: 'column', gap: 3, padding: '10px 4px', fontSize: '.7rem' }}
           onClick={() => { exportInvoiceXLSX(invoice, payments); toast.success('Excel downloaded'); }}>📊<span>Excel</span></button>
         <button className="btn btn-secondary btn-sm" style={{ flexDirection: 'column', gap: 3, padding: '10px 4px', fontSize: '.7rem' }}
@@ -291,7 +291,7 @@ export default function InvoiceDetail() {
             <textarea className="fc" rows={9} value={emailMsg} onChange={e => setEmailMsg(e.target.value)} />
           </div>
           <div className="modal-footer">
-            <button className="btn btn-secondary" onClick={() => { generateInvoicePDF(invoice, payments, LOGO); toast.success('PDF saved'); }}>
+            <button className="btn btn-secondary" onClick={() => { generateInvoicePDF(invoice, payments, LETTERHEAD); toast.success('PDF saved'); }}>
               📄 Download PDF
             </button>
             <button className="btn btn-primary" onClick={handleEmail}>Open Mail Client</button>

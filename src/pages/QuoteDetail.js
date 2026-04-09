@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { generateQuotePDF } from '../lib/pdfGenerator';
 import { exportQuoteXLSX } from '../lib/excelExport';
-import LOGO from '../logoData';
+import LETTERHEAD from '../letterheadData';
 
 const fa = n => 'BWP ' + Number(n || 0).toLocaleString('en-BW', { minimumFractionDigits: 2 });
 const fd = d => d ? format(new Date(d), 'dd MMM yyyy') : '—';
@@ -70,7 +70,7 @@ export default function QuoteDetail() {
       </div>
       {/* Desktop actions */}
       <div className="btn-row" style={{ display: 'flex' }}>
-        <button className="btn btn-secondary btn-sm" onClick={() => { generateQuotePDF(quote, LOGO); toast.success('PDF downloaded'); }}>
+        <button className="btn btn-secondary btn-sm" onClick={() => { generateQuotePDF(quote, LETTERHEAD); toast.success('PDF downloaded'); }}>
           📄 PDF
         </button>
         <button className="btn btn-secondary btn-sm" onClick={() => { exportQuoteXLSX(quote); toast.success('Excel downloaded'); }}>
@@ -91,7 +91,7 @@ export default function QuoteDetail() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 14 }}
         className="mobile-actions">
         <button className="btn btn-secondary btn-sm" style={{ flexDirection: 'column', gap: 3, padding: '10px 6px', fontSize: '.72rem' }}
-          onClick={() => { generateQuotePDF(quote, LOGO); toast.success('PDF downloaded'); }}>
+          onClick={() => { generateQuotePDF(quote, LETTERHEAD); toast.success('PDF downloaded'); }}>
           📄<span>PDF</span>
         </button>
         <button className="btn btn-secondary btn-sm" style={{ flexDirection: 'column', gap: 3, padding: '10px 6px', fontSize: '.72rem' }}
@@ -206,7 +206,7 @@ export default function QuoteDetail() {
             <textarea className="fc" rows={8} value={emailMsg} onChange={e => setEmailMsg(e.target.value)} />
           </div>
           <div className="modal-footer">
-            <button className="btn btn-secondary" onClick={() => { generateQuotePDF(quote, LOGO); toast.success('PDF saved — now send the email'); }}>
+            <button className="btn btn-secondary" onClick={() => { generateQuotePDF(quote, LETTERHEAD); toast.success('PDF saved — now send the email'); }}>
               📄 Download PDF
             </button>
             <button className="btn btn-primary" onClick={handleEmail}>Open Mail Client</button>
